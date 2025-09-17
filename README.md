@@ -1,1 +1,1 @@
-# test-napi-rs-packages
+# test-napi-rs-addon
