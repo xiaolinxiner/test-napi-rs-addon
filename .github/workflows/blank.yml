@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test
+    strategy:
+      matrix:
+        node_version: ["node-v24.2.0-openharmony-arm64"]
+        npm_package: ["rollup", "rolldown", "@oxc-node/core"]
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: ghcr.io/hqzing/docker-openharmony-rootfs:latest
+    steps:
+      - name: test
+        run: |
+          curl -L -O https://github.com/hqzing/build-ohos-node/releases/download/v24.2.0/{{ matrix.node_version }}.tar.gz
+          tar -zxf {{ matrix.node_version }}.tar.gz -C /opt
+          export PATH=$PATH:/opt/{{ matrix.node_version }}/bin
+          mkdir /root/my-test
+          cd /root/my-test
+          npm install {{ matrix.npm_package }}
+          echo "require('{{ matrix.npm_package }}')" > test.js
+          node test.js
